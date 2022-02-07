@@ -27,4 +27,20 @@ inner join db_dept as d
 on e.department_id = d.id 
 where d.department = 'engineering')) as difference
 
-##4. 
+##4. We have a table with employees and their salaries, however, some of the records are old and contain outdated salary information. Find the current salary of each employee assuming that salaries increase each year. Output their id, first name, last name, department ID, and current salary. Order your list by employee ID in ascending order.
+
+with ctesalary as (
+select id, first_name, last_name, department_id, salary,Row_number() OVER ( 
+		Partition BY first_name,last_name order by salary DESC
+	) salary_rank 
+from ms_employee_salary
+)
+select cte.id, cte.first_name, cte.last_name, cte.department_id,cte.salary
+from ctesalary as cte
+where salary_rank = 1;
+
+##5 Find the average number of bathrooms and bedrooms for each city’s property types. Output the result along with the city name and the property type.
+
+select city, avg(bedrooms) total_bedrooms, avg(bathrooms) as total_bathrooms,property_type 
+from airbnb_search_details
+group by city, property_type
